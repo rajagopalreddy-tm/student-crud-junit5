@@ -174,7 +174,7 @@ class StudentRepositoryTest {
     void testDeleteStudentByIdDataShouldBeDeletedSuccessfully() throws StudentNotFoundException {
         studentRepository.deleteStudentById(1);
         assertEquals(1,studentRepository.getAllStudents().size(),"Student list size should be 1");
-//        assertFalse(studentRepository.getStudentById(1).isPresent(), "Student size should be 1");
+//        assertFalse(studentRepository.getStudentById(1).isPresent(), "Student with id 1 should not be present");
     }
 
     @Test
