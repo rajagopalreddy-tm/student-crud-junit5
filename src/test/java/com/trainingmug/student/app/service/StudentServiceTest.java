@@ -1,9 +1,7 @@
 package com.trainingmug.student.app.service;
 
 import com.trainingmug.student.app.model.Student;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.time.Duration;
 import java.util.Optional;
@@ -12,6 +10,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StudentServiceTest {
     private StudentService service;
+
+    @BeforeAll
+    static void initAll() {
+        System.out.println("Starting all tests...");
+    }
 
     @BeforeEach
     void setUp() {
@@ -84,6 +87,16 @@ class StudentServiceTest {
         assertTimeoutPreemptively(Duration.ofMillis(100), () -> {
             // some code that should run within 100 milliseconds
         }, "The code should execute within 100 milliseconds");
+    }
+
+    @AfterEach
+    void tearDown() {
+        System.out.println("Test completed.");
+    }
+
+    @AfterAll
+    static void tearDownAll() {
+        System.out.println("All tests completed.");
     }
 
 }
