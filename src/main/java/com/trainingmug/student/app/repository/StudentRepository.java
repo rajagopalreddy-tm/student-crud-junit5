@@ -1,6 +1,7 @@
 package com.trainingmug.student.app.repository;
 
 
+import com.trainingmug.student.app.exception.StudentDataNullException;
 import com.trainingmug.student.app.exception.StudentNotFoundException;
 import com.trainingmug.student.app.model.Student;
 
@@ -17,7 +18,10 @@ public class StudentRepository {
 //        studentList.add(new Student(3, "Pavan Kalyan", 23));
 //    }
 
-    public void addStudent(Student student) {
+    public void addStudent(Student student) throws StudentDataNullException {
+        if (student == null) {
+            throw new StudentDataNullException("Student cannot be null");
+        }
         studentList.add(student);
     }
 
@@ -25,10 +29,15 @@ public class StudentRepository {
         return new ArrayList<>(studentList);
     }
 
-    public Optional<Student> getStudentById(int id) {
-        return studentList.stream()
+    public Optional<Student> getStudentById(int id) throws StudentNotFoundException {
+        Optional<Student> studentData =  studentList.stream()
                 .filter(student -> student.getId() == id)
                 .findFirst();
+        if (studentData.isPresent()){
+            return studentData;
+        } else {
+            throw new StudentNotFoundException("Student with ID " + id + " not found");
+        }
     }
 
     public void updateStudentData(Student student, int id) throws StudentNotFoundException {
