@@ -40,13 +40,17 @@ public class StudentRepository {
         }
     }
 
-    public void updateStudentData(Student student, int id) throws StudentNotFoundException {
-        Optional<Student> studentData = getStudentById(id);
-        if (studentData.isPresent()) {
-            int index = studentList.indexOf(studentData.get());
-            studentList.set(index, student);
+    public void updateStudentData(Student student, int id) throws StudentNotFoundException, StudentDataNullException {
+        if (student != null) {
+            Optional<Student> studentData = getStudentById(id);
+            if (studentData.isPresent()) {
+                int index = studentList.indexOf(studentData.get());
+                studentList.set(index, student);
+            } else {
+                throw new StudentNotFoundException("Student with ID " + id + " not found");
+            }
         } else {
-            throw new StudentNotFoundException("Student with ID " + id + " not found");
+            throw new StudentDataNullException("Student data should not be null");
         }
     }
 

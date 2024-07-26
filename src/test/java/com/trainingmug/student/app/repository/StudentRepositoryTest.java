@@ -132,52 +132,71 @@ class StudentRepositoryTest {
     @DisplayName("Test Update Student Data: Data Should Not Be Null")
     void testUpdateStudentDataDataShouldNotBeNull() {
         Student student = null;
-        Exception exception = assertThrows(StudentDataNullException.class,()-> studentRepository.updateStudentData(student,1));
+        assertThrows(StudentDataNullException.class, () -> studentRepository.updateStudentData(student, 1));
     }
-//    @Test
-//    @DisplayName("Test Update Student Data")
-//    void testUpdateStudentData() throws StudentNotFoundException {
-//        Student updatedStudent = new Student(1, "Nami", 21);
-//        studentRepository.updateStudentData(updatedStudent, 1);
-//
-//        Optional<Student> student = studentRepository.getStudentById(1);
-//        assertTrue(student.isPresent());
-//        assertEquals(21, student.get().getAge());
-//    }
-//
-//    @Test
-//    @DisplayName("Test Update Student Data Not Found")
-//    void testUpdateStudentDataNotFound() {
-//        Student updatedStudent = new Student(3, "Chopper", 23);
-//        Exception exception = assertThrows(StudentNotFoundException.class, () -> {
-//            studentRepository.updateStudentData(updatedStudent, 3);
-//        });
-//
-//        String expectedMessage = "Student with ID 3 not found";
-//        String actualMessage = exception.getMessage();
-//        assertTrue(actualMessage.contains(expectedMessage));
-//    }
 
     @Test
-    @DisplayName("Test Delete Student By ID")
-    void testDeleteStudentById() throws StudentNotFoundException {
+    @DisplayName("Test Update Student Data: All Parameters Should Be Present")
+    void testUpdateStudentDataAllParametersShouldBePresent() throws StudentNotFoundException, StudentDataNullException {
+        Student studentData = new Student(1,"Monkey D Luffy", 21);
+        studentRepository.updateStudentData(studentData,1);
+
+        Student student = studentRepository.getStudentById(1).orElse(null);
+        assertNotNull(student,"Updated student should not be null");
+        assertEquals("Monkey D Luffy",student.getName(),"Student name should be updated");
+        assertEquals(21,student.getAge(),"Student age should be updated");
+    }
+
+    @Test
+    @DisplayName("Test Update Student Data: Exception Should Be Thrown If Student Not Found")
+    void testUpdateStudentDataExceptionShouldBeThrownIfStudentNotFound() throws StudentNotFoundException {
+        Student updatedStudent = new Student(10, "Nonexistent", 30);
+        Exception exception = assertThrows(StudentNotFoundException.class, () ->
+                studentRepository.updateStudentData(updatedStudent, 10));
+        assertEquals("Student with ID " + 10 + " not found",exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Test Update Student Data: Check If Data Is Updating")
+    void testUpdateStudentDataCheckIfDataIsUpdating() throws StudentNotFoundException, StudentDataNullException {
+        Student updatedStudent = new Student(2, "Roronoa Zoro", 23);
+        studentRepository.updateStudentData(updatedStudent, 2);
+
+        Student student = studentRepository.getStudentById(2).orElse(null);
+        assertNotNull(student, "Updated student should not be null");
+        assertEquals("Roronoa Zoro", student.getName(), "Student name should be updated");
+        assertEquals(23, student.getAge(), "Student age should be updated");
+    }
+
+
+    @Test
+    @DisplayName("Test Delete Student By ID: Data Should Be Deleted Successfully")
+    void testDeleteStudentByIdDataShouldBeDeletedSuccessfully() throws StudentNotFoundException {
         studentRepository.deleteStudentById(1);
-
-        Optional<Student> student = studentRepository.getStudentById(1);
-        assertFalse(student.isPresent());
+        assertEquals(1,studentRepository.getAllStudents().size(),"Student list size should be 1");
+//        assertFalse(studentRepository.getStudentById(1).isPresent(), "Student size should be 1");
     }
 
     @Test
-    @DisplayName("Test Delete Student By ID Not Found")
-    void testDeleteStudentByIdNotFound() {
+    @DisplayName("Test Delete Student By ID: Exception Should Be Thrown If Student Not Found")
+    void testDeleteStudentByIdExceptionShouldBeThrownIfStudentNotFound() {
+        int nonExistentId = 99;
         Exception exception = assertThrows(StudentNotFoundException.class, () -> {
-            studentRepository.deleteStudentById(3);
+            studentRepository.deleteStudentById(nonExistentId);
         });
-
-        String expectedMessage = "Student with ID 3 not found";
-        String actualMessage = exception.getMessage();
-        assertTrue(actualMessage.contains(expectedMessage));
+        assertEquals("Student with ID " + nonExistentId + " not found", exception.getMessage());
     }
+
+    @Test
+    @DisplayName("Test Delete Student By ID: Check If Size of List is Decreasing")
+    void testDeleteStudentByIdCheckIfSizeOfListIsDecreasing() throws StudentNotFoundException {
+        int initialSize = studentRepository.getAllStudents().size();
+        studentRepository.deleteStudentById(2);
+        int newSize = studentRepository.getAllStudents().size();
+        assertEquals(initialSize - 1, newSize, "Size of the list should decrease by 1 after deletion");
+    }
+
+
 
     @AfterEach
     void tearDown() {
